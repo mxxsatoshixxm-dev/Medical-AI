@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会社概要 | MedAI Vision</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --orange:#FF6A00; --orange-bright:#FF8C00; --black:#0A0A0A; --dark:#111111; --dark2:#1A1A1A; --dark3:#222222; --white:#F5F5F5; --gray:#888888; --gray-light:#BBBBBB; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--white); font-family:'Noto Sans JP',sans-serif; overflow-x:hidden; cursor:none; }
+  .cursor { position:fixed; width:12px; height:12px; background:var(--orange); border-radius:50%; pointer-events:none; z-index:99999; transform:translate(-50%,-50%); mix-blend-mode:screen; }
+  .cursor-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,106,0,0.5); border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:all 0.15s ease; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-items:center; justify-content:space-between; padding:0 60px; height:72px; background:rgba(10,10,10,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,106,0,0.15); }
+  .logo { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; letter-spacing:2px; text-decoration:none; color:var(--white); display:flex; align-items:center; gap:10px; }
+  .logo span { color:var(--orange); }
+  .logo-icon { width:36px; height:36px; background:var(--orange); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#000; }
+  .nav-links { display:flex; gap:40px; list-style:none; }
+  .nav-links a { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; letter-spacing:1.5px; text-decoration:none; color:var(--gray-light); text-transform:uppercase; position:relative; transition:color 0.2s; }
+  .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:var(--orange); transition:width 0.3s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--white); }
+  .nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+  .nav-cta { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; padding:10px 28px; border:1.5px solid var(--orange); color:var(--orange); transition:all 0.25s; position:relative; overflow:hidden; }
+  .nav-cta::before { content:''; position:absolute; inset:0; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform 0.25s; z-index:-1; }
+  .nav-cta:hover { color:#000; }
+  .nav-cta:hover::before { transform:scaleX(1); }
+
+  /* PAGE HERO */
+  .page-hero { padding:160px 60px 80px; position:relative; overflow:hidden; border-bottom:1px solid rgba(255,106,0,0.1); }
+  .page-hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,106,0,0.06) 0%, transparent 70%); }
+  .page-hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,106,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,106,0,0.03) 1px, transparent 1px); background-size:60px 60px; }
+  .breadcrumb { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--gray); margin-bottom:24px; }
+  .breadcrumb span { color:var(--orange); }
+  .page-title { font-family:'Rajdhani',sans-serif; font-size:clamp(48px,6vw,80px); font-weight:700; line-height:1.05; letter-spacing:-1px; margin-bottom:24px; }
+  .page-title .accent { color:var(--orange); }
+
+  section { padding:100px 60px; }
+  .section-eyebrow { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:4px; color:var(--orange); text-transform:uppercase; margin-bottom:16px; }
+  .section-title { font-family:'Rajdhani',sans-serif; font-size:clamp(36px,4vw,52px); font-weight:700; letter-spacing:-0.5px; line-height:1.1; margin-bottom:20px; }
+
+  /* MISSION */
+  .mission { background:var(--dark); }
+  .mission-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .mission-text p { font-size:17px; line-height:2; color:var(--gray-light); font-weight:300; }
+  .mission-values { display:flex; flex-direction:column; gap:2px; background:rgba(255,106,0,0.08); }
+  .val-item { background:var(--dark2); padding:28px 32px; display:flex; gap:20px; align-items:flex-start; transition:background 0.2s; }
+  .val-item:hover { background:var(--dark3); }
+  .val-icon { font-size:28px; flex-shrink:0; }
+  .val-item strong { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:600; display:block; margin-bottom:4px; }
+  .val-item p { font-size:13px; color:var(--gray); line-height:1.6; }
+
+  /* COMPANY INFO TABLE */
+  .info-section { background:var(--black); }
+  .info-table { width:100%; border-collapse:collapse; margin-top:48px; }
+  .info-table tr { border-bottom:1px solid rgba(255,255,255,0.05); }
+  .info-table tr:first-child { border-top:1px solid rgba(255,106,0,0.15); }
+  .info-table td { padding:24px 0; font-size:15px; vertical-align:top; }
+  .info-table td:first-child { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--orange); width:220px; }
+  .info-table td:last-child { color:var(--gray-light); line-height:1.8; }
+
+  /* TEAM */
+  .team-section { background:var(--dark); }
+  .team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; background:rgba(255,106,0,0.08); margin-top:60px; }
+  .member-card { background:var(--dark2); padding:36px 28px; transition:background 0.2s; }
+  .member-card:hover { background:var(--dark3); }
+  .member-avatar { width:72px; height:72px; background:linear-gradient(135deg, rgba(255,106,0,0.2), rgba(255,106,0,0.05)); border:1px solid rgba(255,106,0,0.3); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:20px; }
+  .member-card h3 { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:600; margin-bottom:4px; }
+  .member-card .role { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:12px; }
+  .member-card p { font-size:13px; color:var(--gray); line-height:1.6; }
+
+  /* TIMELINE */
+  .timeline-section { background:var(--black); }
+  .timeline { display:flex; flex-direction:column; gap:0; margin-top:60px; position:relative; }
+  .timeline::before { content:''; position:absolute; left:90px; top:0; bottom:0; width:1px; background:linear-gradient(to bottom, var(--orange), rgba(255,106,0,0.1)); }
+  .tl-item { display:flex; gap:32px; padding-bottom:48px; align-items:flex-start; }
+  .tl-year { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:var(--orange); width:90px; flex-shrink:0; padding-top:2px; text-align:right; }
+  .tl-dot { width:10px; height:10px; background:var(--orange); border-radius:50%; flex-shrink:0; margin-top:6px; box-shadow:0 0 8px rgba(255,106,0,0.6); position:relative; z-index:1; }
+  .tl-content h4 { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:600; margin-bottom:6px; }
+  .tl-content p { font-size:14px; color:var(--gray); line-height:1.7; }
+
+  /* NEWS */
+  .news-section { background:var(--dark); }
+  .news-grid { display:flex; flex-direction:column; gap:0; margin-top:48px; }
+  .news-item { display:flex; gap:40px; padding:28px 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:flex-start; transition:background 0.2s; text-decoration:none; color:inherit; }
+  .news-item:hover .news-title { color:var(--orange); }
+  .news-date { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--gray); width:100px; flex-shrink:0; padding-top:4px; }
+  .news-tag { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1px; background:rgba(255,106,0,0.1); border:1px solid rgba(255,106,0,0.2); color:var(--orange); padding:3px 10px; flex-shrink:0; height:fit-content; }
+  .news-title { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:600; letter-spacing:0.3px; line-height:1.4; transition:color 0.2s; }
+
+  .cta-strip { background:var(--orange); padding:60px; display:flex; align-items:center; justify-content:space-between; position:relative; overflow:hidden; }
+  .cta-strip::before { content:''; position:absolute; right:-100px; top:-100px; width:400px; height:400px; border-radius:50%; background:rgba(0,0,0,0.08); }
+  .cta-strip h2 { font-family:'Rajdhani',sans-serif; font-size:36px; font-weight:700; color:#000; letter-spacing:-0.5px; max-width:500px; }
+  .btn-dark { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; padding:16px 40px; background:#000; color:var(--orange); display:inline-flex; align-items:center; gap:10px; transition:all 0.25s; white-space:nowrap; clip-path:polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+  .btn-dark:hover { background:var(--dark2); }
+
+  footer { background:var(--dark); border-top:1px solid rgba(255,106,0,0.1); padding:60px 60px 40px; }
+  .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:60px; margin-bottom:48px; }
+  .footer-brand p { font-size:14px; color:var(--gray); line-height:1.8; margin-top:16px; max-width:280px; }
+  .footer-col h4 { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--white); margin-bottom:20px; }
+  .footer-col a { display:block; text-decoration:none; color:var(--gray); font-size:14px; margin-bottom:10px; transition:color 0.2s; }
+  .footer-col a:hover { color:var(--orange); }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,0.06); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--gray); font-family:'Share Tech Mono',monospace; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s, transform 0.8s; }
+  .reveal.visible { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">M</div>
+    Med<span>AI</span> Vision
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">TOP</a></li>
+    <li><a href="service.html">サービス</a></li>
+    <li><a href="company.html" class="active">会社概要</a></li>
+    <li><a href="contact.html">お問い合わせ</a></li>
+  </ul>
+  <a href="contact.html" class="nav-cta">デモを申込む</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <p class="breadcrumb">HOME / <span>COMPANY</span></p>
+  <h1 class="page-title">会社<span class="accent">概要</span></h1>
+  <p style="font-size:17px;line-height:1.8;color:var(--gray-light);max-width:560px;font-weight:300;">
+    テクノロジーの力で、医療の質を底上げする。MedAI Visionは医工連携と深層学習の融合から生まれました。
+  </p>
+</div>
+
+<!-- MISSION -->
+<section class="mission reveal" id="mission">
+  <div class="mission-inner">
+    <div class="mission-text">
+      <p class="section-eyebrow">// Mission</p>
+      <h2 class="section-title">AIで医師を強くし、<br>患者を救う。</h2>
+      <p>
+        日本の医療は深刻な医師不足と診断精度のばらつきという課題を抱えています。我々は医療AIを"医師の代替"ではなく"医師の強化ツール"として位置づけ、すべての患者が質の高い診断を受けられる未来を実現します。<br><br>
+        深層学習・コンピュータビジョン・医学の知識が交差するフロンティアで、常に世界最高水準を目指します。
+      </p>
+    </div>
+    <div class="mission-values">
+      <div class="val-item">
+        <span class="val-icon">🎯</span>
+        <div>
+          <strong>精度へのこだわり</strong>
+          <p>99%未満に満足しない。臨床現場で使える精度を、妥協なく追求する。</p>
+        </div>
+      </div>
+      <div class="val-item">
+        <span class="val-icon">🤝</span>
+        <div>
+          <strong>医師との共創</strong>
+          <p>エンジニアと医師が同じチームで開発。現場視点のプロダクトを作る。</p>
+        </div>
+      </div>
+      <div class="val-item">
+        <span class="val-icon">🔒</span>
+        <div>
+          <strong>安全性最優先</strong>
+          <p>薬事規制を遵守し、医療グレードのセキュリティと品質管理を徹底。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPANY INFO -->
+<section class="info-section reveal">
+  <p class="section-eyebrow">// Company Profile</p>
+  <h2 class="section-title">会社情報</h2>
+  <table class="info-table">
+    <tr><td>社名</td><td>株式会社 MedAI Vision</td></tr>
+    <tr><td>設立</td><td>2020年4月</td></tr>
+    <tr><td>代表取締役</td><td>山田 健一（医学博士 / 元東京大学医学部附属病院 放射線科）</td></tr>
+    <tr><td>所在地</td><td>〒100-0005　東京都千代田区丸の内2-4-1 丸ビル22F</td></tr>
+    <tr><td>従業員数</td><td>148名（うちPhD・医師 42名）</td></tr>
+    <tr><td>資本金</td><td>32億円（シリーズC調達済）</td></tr>
+    <tr><td>事業内容</td><td>医療画像診断支援AIシステムの開発・販売・保守<br>医療データ解析プラットフォームの運用<br>医療機関向けAIコンサルティング</td></tr>
+    <tr><td>認証・認定</td><td>ISMS認証（ISO/IEC 27001）取得<br>医療機器製造販売業許可取得<br>薬事承認取得製品3件</td></tr>
+    <tr><td>主要取引先</td><td>国立大学病院、地域中核病院、健診センター（全国150施設以上）</td></tr>
+  </table>
+</section>
+
+<!-- TEAM -->
+<section class="team-section reveal" id="team">
+  <p class="section-eyebrow">// Leadership Team</p>
+  <h2 class="section-title">リーダーシップ</h2>
+  <div class="team-grid">
+    <div class="member-card">
+      <div class="member-avatar">🩺</div>
+      <h3>山田 健一</h3>
+      <p class="role">CEO / 代表取締役</p>
+      <p>東京大学医学部卒。前・放射線科医師。画像診断×AI研究を10年間主導。</p>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar">💻</div>
+      <h3>鈴木 麻衣</h3>
+      <p class="role">CTO / 最高技術責任者</p>
+      <p>MIT Computer Science PhD。医用画像解析・深層学習の世界的権威。論文被引用数5000+。</p>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar">📊</div>
+      <h3>田中 誠</h3>
+      <p class="role">CFO / 最高財務責任者</p>
+      <p>元Goldman Sachs。ヘルスケアテック専門。シリーズA〜C計65億円の調達を主導。</p>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar">🔬</div>
+      <h3>渡辺 由美</h3>
+      <p class="role">CMO / 最高医療責任者</p>
+      <p>元国立がん研究センター病理医。臨床試験・薬事申請プロセスを統括。</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section reveal">
+  <p class="section-eyebrow">// History</p>
+  <h2 class="section-title">沿革</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-year">2020</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>会社設立 / シリーズA調達（8億円）</h4>
+        <p>東京大学医学部発スタートアップとして創業。放射線科AI開発に着手。</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2021</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>放射線科AI（肺結節検出）薬事承認取得</h4>
+        <p>国内初の肺結節AI診断支援製品として承認。10病院でのPOC完了。</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2022</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>シリーズB調達（25億円） / 病理AIリリース</h4>
+        <p>大腸がん・乳がん病理診断AIをリリース。導入施設50件突破。</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2024</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>眼科スクリーニングAI薬事承認 / シリーズC（32億円）</h4>
+        <p>糖尿病網膜症AIが承認。海外展開（シンガポール・タイ）も開始。</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <h4>導入施設150件突破 / IPO準備開始</h4>
+        <p>国内主要医療機関への展開が加速。東証グロース上場に向けた準備を本格化。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="news-section reveal" id="news">
+  <p class="section-eyebrow">// News</p>
+  <h2 class="section-title">最新ニュース</h2>
+  <div class="news-grid">
+    <a href="#" class="news-item">
+      <span class="news-date">2026.04.15</span>
+      <span class="news-tag">PR</span>
+      <span class="news-title">シリーズC追加調達32億円完了。海外展開・新製品開発を加速</span>
+    </a>
+    <a href="#" class="news-item">
+      <span class="news-date">2026.03.28</span>
+      <span class="news-tag">製品</span>
+      <span class="news-title">脳MRI診断支援AI「NeuroScan AI」ベータ版を主要医療機関に提供開始</span>
+    </a>
+    <a href="#" class="news-item">
+      <span class="news-date">2026.02.10</span>
+      <span class="news-tag">受賞</span>
+      <span class="news-title">日本医療情報学会「医療AI優秀賞」を3年連続受賞</span>
+    </a>
+    <a href="#" class="news-item">
+      <span class="news-date">2026.01.20</span>
+      <span class="news-tag">提携</span>
+      <span class="news-title">シンガポール国立大学病院との共同研究協定を締結</span>
+    </a>
+    <a href="#" class="news-item">
+      <span class="news-date">2025.12.01</span>
+      <span class="news-tag">導入</span>
+      <span class="news-title">累計導入医療機関が150施設を突破。全国展開を加速</span>
+    </a>
+  </div>
+</section>
+
+<div class="cta-strip reveal">
+  <h2>採用情報も随時公開中。<br>共に医療の未来を創る仲間を募集。</h2>
+  <a href="contact.html" class="btn-dark">お問い合わせはこちら →</a>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="logo" style="font-size:22px;">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:11px;">M</div>
+        Med<span>AI</span> Vision
+      </a>
+      <p>医療画像診断支援AIのリーディングカンパニーとして、日本の医療の未来を切り拓きます。</p>
+    </div>
+    <div class="footer-col">
+      <h4>サービス</h4>
+      <a href="service.html#radiology">放射線科AI</a>
+      <a href="service.html#pathology">病理診断AI</a>
+      <a href="service.html#ophthalmology">眼科AI</a>
+    </div>
+    <div class="footer-col">
+      <h4>会社情報</h4>
+      <a href="company.html">会社概要</a>
+      <a href="company.html#team">チーム</a>
+      <a href="company.html#news">ニュース</a>
+    </div>
+    <div class="footer-col">
+      <h4>お問い合わせ</h4>
+      <a href="contact.html">デモ申込み</a>
+      <a href="contact.html">導入相談</a>
+      <a href="contact.html">採用情報</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MedAI Vision Inc. All rights reserved.</span>
+    <span>Pioneering Medical AI Since 2020</span>
+  </div>
+</footer>
+
+<script>
+  const cursor=document.getElementById('cursor'), ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+  function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+  animRing();
+  const reveals=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});},{threshold:0.08});
+  reveals.forEach(r=>io.observe(r));
+</script>
+</body>
+</html>

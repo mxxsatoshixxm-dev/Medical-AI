@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>お問い合わせ | MedAI Vision</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --orange:#FF6A00; --orange-bright:#FF8C00; --black:#0A0A0A; --dark:#111111; --dark2:#1A1A1A; --dark3:#222222; --white:#F5F5F5; --gray:#888888; --gray-light:#BBBBBB; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--white); font-family:'Noto Sans JP',sans-serif; overflow-x:hidden; cursor:none; }
+  .cursor { position:fixed; width:12px; height:12px; background:var(--orange); border-radius:50%; pointer-events:none; z-index:99999; transform:translate(-50%,-50%); mix-blend-mode:screen; }
+  .cursor-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,106,0,0.5); border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:all 0.15s ease; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-items:center; justify-content:space-between; padding:0 60px; height:72px; background:rgba(10,10,10,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,106,0,0.15); }
+  .logo { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; letter-spacing:2px; text-decoration:none; color:var(--white); display:flex; align-items:center; gap:10px; }
+  .logo span { color:var(--orange); }
+  .logo-icon { width:36px; height:36px; background:var(--orange); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; color:#000; }
+  .nav-links { display:flex; gap:40px; list-style:none; }
+  .nav-links a { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; letter-spacing:1.5px; text-decoration:none; color:var(--gray-light); text-transform:uppercase; position:relative; transition:color 0.2s; }
+  .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:var(--orange); transition:width 0.3s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--white); }
+  .nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+  .nav-cta { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; padding:10px 28px; border:1.5px solid var(--orange); color:var(--orange); transition:all 0.25s; position:relative; overflow:hidden; }
+  .nav-cta::before { content:''; position:absolute; inset:0; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform 0.25s; z-index:-1; }
+  .nav-cta:hover { color:#000; }
+  .nav-cta:hover::before { transform:scaleX(1); }
+
+  /* PAGE HERO */
+  .page-hero { padding:160px 60px 80px; position:relative; overflow:hidden; border-bottom:1px solid rgba(255,106,0,0.1); }
+  .page-hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,106,0,0.06) 0%, transparent 70%); }
+  .page-hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,106,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,106,0,0.03) 1px, transparent 1px); background-size:60px 60px; }
+  .breadcrumb { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--gray); margin-bottom:24px; }
+  .breadcrumb span { color:var(--orange); }
+  .page-title { font-family:'Rajdhani',sans-serif; font-size:clamp(48px,6vw,80px); font-weight:700; line-height:1.05; letter-spacing:-1px; margin-bottom:24px; }
+  .page-title .accent { color:var(--orange); }
+
+  /* MAIN LAYOUT */
+  .contact-main { padding:100px 60px; display:grid; grid-template-columns:1fr 1.6fr; gap:80px; align-items:start; }
+
+  /* LEFT PANEL */
+  .contact-info { position:sticky; top:100px; }
+  .section-eyebrow { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:4px; color:var(--orange); text-transform:uppercase; margin-bottom:16px; }
+  .contact-info h2 { font-family:'Rajdhani',sans-serif; font-size:40px; font-weight:700; line-height:1.15; margin-bottom:20px; letter-spacing:-0.5px; }
+  .contact-info p { font-size:15px; line-height:1.8; color:var(--gray-light); font-weight:300; margin-bottom:40px; }
+
+  .info-blocks { display:flex; flex-direction:column; gap:2px; background:rgba(255,106,0,0.08); }
+  .info-block { background:var(--dark2); padding:24px 28px; display:flex; gap:16px; align-items:flex-start; }
+  .ib-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+  .ib-label { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:4px; }
+  .ib-val { font-size:14px; color:var(--gray-light); line-height:1.6; }
+
+  /* POC Steps */
+  .poc-steps { margin-top:40px; }
+  .poc-steps h3 { font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:600; letter-spacing:0.5px; margin-bottom:20px; color:var(--white); }
+  .poc-step { display:flex; gap:16px; align-items:flex-start; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .poc-step:last-child { border-bottom:none; }
+  .poc-num { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; color:rgba(255,106,0,0.25); line-height:1; width:36px; flex-shrink:0; }
+  .poc-step strong { font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:600; display:block; margin-bottom:2px; }
+  .poc-step p { font-size:12px; color:var(--gray); }
+
+  /* FORM */
+  .contact-form-wrap { background:var(--dark); border:1px solid rgba(255,106,0,0.1); padding:56px 48px; }
+  .form-header { margin-bottom:40px; }
+  .form-header h3 { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; margin-bottom:8px; }
+  .form-header p { font-size:14px; color:var(--gray); }
+
+  .form-group { margin-bottom:28px; }
+  .form-label { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; display:block; margin-bottom:10px; }
+  .form-label .req { color:var(--gray); font-size:9px; margin-left:6px; }
+
+  .form-input, .form-select, .form-textarea {
+    width:100%;
+    background:var(--dark2);
+    border:1px solid rgba(255,255,255,0.1);
+    color:var(--white);
+    font-family:'Noto Sans JP',sans-serif;
+    font-size:15px;
+    padding:14px 18px;
+    outline:none;
+    transition:border-color 0.2s, background 0.2s;
+    appearance:none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color:var(--orange);
+    background:var(--dark3);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color:var(--gray); }
+  .form-textarea { resize:vertical; min-height:140px; line-height:1.6; }
+  .form-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FF6A00' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 18px center; cursor:pointer; }
+  .form-select option { background:var(--dark2); }
+
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+  /* Checkbox group */
+  .check-group { display:flex; flex-wrap:wrap; gap:10px; }
+  .check-label { display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:var(--gray-light); padding:8px 16px; border:1px solid rgba(255,255,255,0.1); transition:all 0.2s; }
+  .check-label input { display:none; }
+  .check-label:has(input:checked) { border-color:var(--orange); color:var(--orange); background:rgba(255,106,0,0.08); }
+  .check-box { width:14px; height:14px; border:1px solid currentColor; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; }
+
+  .form-submit {
+    width:100%;
+    font-family:'Rajdhani',sans-serif;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    padding:20px;
+    background:var(--orange);
+    color:#000;
+    border:none;
+    cursor:pointer;
+    margin-top:8px;
+    transition:all 0.25s;
+    position:relative;
+    overflow:hidden;
+    clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+  .form-submit:hover { background:var(--orange-bright); box-shadow:0 8px 30px rgba(255,106,0,0.35); }
+  .form-submit:active { transform:scale(0.99); }
+
+  .privacy-note { font-size:12px; color:var(--gray); margin-top:16px; line-height:1.7; text-align:center; }
+
+  /* Success state */
+  .form-success {
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:80px 40px;
+    gap:20px;
+  }
+  .success-icon { font-size:56px; }
+  .form-success h3 { font-family:'Rajdhani',sans-serif; font-size:32px; font-weight:700; }
+  .form-success p { font-size:15px; color:var(--gray-light); line-height:1.7; }
+
+  footer { background:var(--dark); border-top:1px solid rgba(255,106,0,0.1); padding:60px 60px 40px; }
+  .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:60px; margin-bottom:48px; }
+  .footer-brand p { font-size:14px; color:var(--gray); line-height:1.8; margin-top:16px; max-width:280px; }
+  .footer-col h4 { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--white); margin-bottom:20px; }
+  .footer-col a { display:block; text-decoration:none; color:var(--gray); font-size:14px; margin-bottom:10px; transition:color 0.2s; }
+  .footer-col a:hover { color:var(--orange); }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,0.06); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--gray); font-family:'Share Tech Mono',monospace; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s, transform 0.8s; }
+  .reveal.visible { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">M</div>
+    Med<span>AI</span> Vision
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">TOP</a></li>
+    <li><a href="service.html">サービス</a></li>
+    <li><a href="company.html">会社概要</a></li>
+    <li><a href="contact.html" class="active">お問い合わせ</a></li>
+  </ul>
+  <a href="contact.html" class="nav-cta">デモを申込む</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <p class="breadcrumb">HOME / <span>CONTACT</span></p>
+  <h1 class="page-title">お<span class="accent">問い合わせ</span></h1>
+  <p style="font-size:17px;line-height:1.8;color:var(--gray-light);max-width:560px;font-weight:300;">
+    まずは無償デモから。導入のご相談、採用情報など、お気軽にご連絡ください。
+  </p>
+</div>
+
+<div class="contact-main">
+  <!-- LEFT -->
+  <div class="contact-info reveal">
+    <p class="section-eyebrow">// Contact Info</p>
+    <h2>貴院の課題を<br>ご相談ください。</h2>
+    <p>専任のカスタマーサクセスが、貴院のニーズをヒアリングし、最適なPOCプランをご提案します。導入から運用まで一貫してサポートします。</p>
+
+    <div class="info-blocks">
+      <div class="info-block">
+        <span class="ib-icon">📧</span>
+        <div>
+          <div class="ib-label">Email</div>
+          <div class="ib-val">info@medaivision.co.jp</div>
+        </div>
+      </div>
+      <div class="info-block">
+        <span class="ib-icon">📞</span>
+        <div>
+          <div class="ib-label">Phone</div>
+          <div class="ib-val">03-XXXX-XXXX（平日 9:00〜18:00）</div>
+        </div>
+      </div>
+      <div class="info-block">
+        <span class="ib-icon">📍</span>
+        <div>
+          <div class="ib-label">Office</div>
+          <div class="ib-val">〒100-0005 東京都千代田区丸の内2-4-1<br>丸ビル22F</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="poc-steps">
+      <h3>// 無償POCの流れ</h3>
+      <div class="poc-step">
+        <div class="poc-num">01</div>
+        <div>
+          <strong>ヒアリング（30分）</strong>
+          <p>貴院の診療科・課題・現在のワークフローをオンラインでヒアリング</p>
+        </div>
+      </div>
+      <div class="poc-step">
+        <div class="poc-num">02</div>
+        <div>
+          <strong>デモンストレーション</strong>
+          <p>貴院データ（匿名化）を用いたリアルタイムAIデモを実施</p>
+        </div>
+      </div>
+      <div class="poc-step">
+        <div class="poc-num">03</div>
+        <div>
+          <strong>無償POC（2〜4週間）</strong>
+          <p>実環境でのPOCを無償実施。精度・ワークフローを検証</p>
+        </div>
+      </div>
+      <div class="poc-step">
+        <div class="poc-num">04</div>
+        <div>
+          <strong>導入提案・契約</strong>
+          <p>POC結果をもとに最適なプランをご提案。段階導入も可能</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="contact-form-wrap reveal" id="formWrap">
+    <div id="formInner">
+      <div class="form-header">
+        <h3>お問い合わせフォーム</h3>
+        <p>通常2営業日以内にご返答いたします</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">お問い合わせ種別 <span class="req">必須</span></label>
+        <select class="form-select" id="inquiry-type">
+          <option value="" disabled selected>選択してください</option>
+          <option>無償デモ・POCの申込み</option>
+          <option>サービスの詳細確認</option>
+          <option>導入に関する相談</option>
+          <option>採用情報について</option>
+          <option>その他</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">お名前 <span class="req">必須</span></label>
+          <input type="text" class="form-input" placeholder="山田 太郎" id="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">役職</label>
+          <input type="text" class="form-input" placeholder="放射線科部長" id="title">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">医療機関名 <span class="req">必須</span></label>
+        <input type="text" class="form-input" placeholder="○○大学病院" id="hospital">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">メールアドレス <span class="req">必須</span></label>
+          <input type="email" class="form-input" placeholder="yamada@hospital.jp" id="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">電話番号</label>
+          <input type="tel" class="form-input" placeholder="03-XXXX-XXXX" id="tel">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ご関心のあるサービス</label>
+        <div class="check-group">
+          <label class="check-label"><input type="checkbox"><span class="check-box">✓</span>放射線科AI</label>
+          <label class="check-label"><input type="checkbox"><span class="check-box">✓</span>病理診断AI</label>
+          <label class="check-label"><input type="checkbox"><span class="check-box">✓</span>眼科スクリーニングAI</label>
+          <label class="check-label"><input type="checkbox"><span class="check-box">✓</span>統合・カスタム開発</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ご質問・ご要望</label>
+        <textarea class="form-textarea" placeholder="現在の課題や、ご希望のデモ内容など、お気軽にご記入ください。" id="message"></textarea>
+      </div>
+
+      <button class="form-submit" onclick="submitForm()">
+        送信する →
+      </button>
+      <p class="privacy-note">送信することで、プライバシーポリシーへの同意とみなします。<br>個人情報は弊社プライバシーポリシーに基づき適切に管理いたします。</p>
+    </div>
+
+    <div class="form-success" id="formSuccess">
+      <div class="success-icon">✅</div>
+      <h3>送信完了しました</h3>
+      <p>お問い合わせありがとうございます。<br>通常2営業日以内に担当者よりご連絡いたします。</p>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--orange);margin-top:8px;">// INQUIRY RECEIVED</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="logo" style="font-size:22px;">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:11px;">M</div>
+        Med<span>AI</span> Vision
+      </a>
+      <p>医療画像診断支援AIのリーディングカンパニーとして、日本の医療の未来を切り拓きます。</p>
+    </div>
+    <div class="footer-col">
+      <h4>サービス</h4>
+      <a href="service.html#radiology">放射線科AI</a>
+      <a href="service.html#pathology">病理診断AI</a>
+      <a href="service.html#ophthalmology">眼科AI</a>
+    </div>
+    <div class="footer-col">
+      <h4>会社情報</h4>
+      <a href="company.html">会社概要</a>
+      <a href="company.html#team">チーム</a>
+      <a href="company.html#news">ニュース</a>
+    </div>
+    <div class="footer-col">
+      <h4>お問い合わせ</h4>
+      <a href="contact.html">デモ申込み</a>
+      <a href="contact.html">導入相談</a>
+      <a href="contact.html">採用情報</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MedAI Vision Inc. All rights reserved.</span>
+    <span>Pioneering Medical AI Since 2020</span>
+  </div>
+</footer>
+
+<script>
+  const cursor=document.getElementById('cursor'), ring=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+  function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+  animRing();
+  const reveals=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});},{threshold:0.08});
+  reveals.forEach(r=>io.observe(r));
+
+  // Checkbox toggle
+  document.querySelectorAll('.check-label').forEach(label => {
+    label.addEventListener('click', () => {
+      const cb = label.querySelector('input');
+      setTimeout(() => {
+        label.querySelector('.check-box').textContent = cb.checked ? '✓' : '';
+      }, 0);
+    });
+  });
+
+  function submitForm() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const hospital = document.getElementById('hospital').value.trim();
+    const type = document.getElementById('inquiry-type').value;
+
+    if(!name || !email || !hospital || !type) {
+      // Shake animation on empty fields
+      [name && '' || 'name', email && '' || 'email', hospital && '' || 'hospital'].forEach(id => {
+        if(id) {
+          const el = document.getElementById(id);
+          if(el && !el.value.trim()) {
+            el.style.borderColor = '#ff4444';
+            el.style.animation = 'shake 0.3s ease';
+            setTimeout(() => { el.style.animation = ''; }, 300);
+          }
+        }
+      });
+      return;
+    }
+
+    // Show success
+    document.getElementById('formInner').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'flex';
+  }
+</script>
+<style>
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-8px); }
+    75% { transform:translateX(8px); }
+  }
+</style>
+</body>
+</html>
